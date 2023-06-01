@@ -26,6 +26,9 @@ public class Post {
     @Column(nullable = false)
     private String writer;
 
+    @Column(nullable = false)
+    private String title;
+
     private String content;
 
     @CreationTimestamp
@@ -36,6 +39,15 @@ public class Post {
 
 //    게시글에 달린 해시태그 목록
     @OneToMany(mappedBy = "post")
+    @Builder.Default //빌더를 사용하면서 기본값을 새로 주고 싶다면 사용 해야 함
     private List<HashTag> hashTags = new ArrayList<>();
+
+//    양방향 매핑에서 리스트쪽에 테이터를 추가하는 편의 메서드 생성해야 함. 새로 갱신되지 않기 때문
+    public void addHashTag(HashTag hashTag) {
+        hashTags.add(hashTag);
+        if(this != hashTag.getPost()) {
+            hashTag.setPost(this);
+        }
+    }
 
 }
