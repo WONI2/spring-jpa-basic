@@ -2,6 +2,8 @@ package com.study.jpa.chap05_practice.api;
 
 import com.study.jpa.chap05_practice.dto.*;
 import com.study.jpa.chap05_practice.sevice.PostService;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +54,12 @@ public class PostApiController {
         }
     }
 //    게시물 등록
+    @Parameters({
+            @Parameter(name = "writer", description = "게시물의 작성자 이름을 쓰세용", example = "호빵맨", required = true)
+            ,@Parameter(name = "title", description = "게시물의 제목을 쓰세용", example = "내머리 나눠줄게",required = true)
+            ,@Parameter(name = "content", description = "게시물의 내용을 쓰세영", example = "호빵을 먹고 힘내자", required = true)
+            , @Parameter(name = "hashTags", description = "게시물의 해시태그를 나열해주세요.", example = "['하하', '호호']")
+    })
     @PostMapping
     public ResponseEntity<?> create(@Validated @RequestBody PostCreateDTO dto,
                                     BindingResult result) { //BindingResult : 검증에러 정보를 가진 객체
@@ -87,25 +95,34 @@ public class PostApiController {
     }
 
     // 게시물 수정
-    @RequestMapping(method= {RequestMethod.PUT, RequestMethod.PATCH})
-    public ResponseEntity<?> update(@Validated @RequestBody PostModifyDTO dto, //@RequestBody : AJAX로 받기 위해
-                                    BindingResult result,
-                                    HttpServletRequest request) {
-        log.info("/api/v1/posts {} - dto : {}", request.getMethod(), dto);
+
+    @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH}) // 기본적으로 보내주는 값이 json.  consumes = {}이 숨어있고 json을 받아줌
+    public ResponseEntity<?> update(
+            @Validated @RequestBody PostModifyDTO dto
+            , BindingResult result
+            , HttpServletRequest request
+    ) {
+
+        log.info("/api/v1/posts {}!! - dto: {}"
+                , request.getMethod(), dto);
 
         ResponseEntity<List<FieldError>> fieldErrors = getValidatedResult(result);
         if (fieldErrors != null) return fieldErrors;
 
+
         try {
-            PostDetailResponseDTO detailResponseDTO = postService.modify(dto);
-            return ResponseEntity.ok(detailResponseDTO);
+            PostDetailResponseDTO responseDTO
+                    = postService.modify(dto);
+            return ResponseEntity
+                    .ok(responseDTO);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity
+                    .internalServerError()
+                    .body(e.getMessage());
         }
-
-
     }
 
+    //게시물 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete( @PathVariable Long id) {
 

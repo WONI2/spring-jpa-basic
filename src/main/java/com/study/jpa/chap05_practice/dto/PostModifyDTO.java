@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 
 
 @Setter @Getter @ToString @EqualsAndHashCode
-@NoArgsConstructor
+@NoArgsConstructor(force = true)
 @AllArgsConstructor
 @Builder
 public class PostModifyDTO {
