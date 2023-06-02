@@ -38,7 +38,7 @@ public class Post {
     private LocalDateTime updateDate;
 
 //    게시글에 달린 해시태그 목록
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", orphanRemoval = true) //orphanRemoval = true : hashtag에서 cascade를 걸어주면 필요.
     @Builder.Default //빌더를 사용하면서 기본값을 새로 주고 싶다면 사용 해야 함
     private List<HashTag> hashTags = new ArrayList<>();
 
